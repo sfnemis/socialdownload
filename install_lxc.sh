@@ -2,8 +2,7 @@
 set -e
 
 # --- Configuration ---
-# IMPORTANT: Change this to your actual repository URL
-REPO_URL="https://github.com/YOUR_USERNAME/socialdownload.git"
+REPO_URL="https://github.com/sfnemis/socialdownload.git"
 APP_DIR="socialdownload"
 # Generate a random, secure JWT secret
 JWT_SECRET=$(openssl rand -hex 32)
@@ -60,12 +59,19 @@ docker run -d \
   -p 3000:3000 \
   --name social-downloader \
   --env-file .env \
-  -v "$(pwd)/data/db:/app/prisma" \
+  -v "$(pwd)/data/db:/data" \
   -v "$(pwd)/data/downloads:/downloads" \
   --restart unless-stopped \
   social-downloader
 
+# 9. Set up the database
+echo "⚙️ Setting up the database (migrations and seeding)..."
+sleep 5 # Give the container a moment to start up
+docker exec social-downloader npm run db:migrate
+docker exec social-downloader npm run seed
+
 # --- Done ---
 echo "✅ Deployment complete!"
 echo "Your Social Downloader is now running on http://<YOUR_LXC_IP>:3000"
+echo "Login with admin@example.com and password 'admin'."
 echo "IMPORTANT: In the application settings, set your download path to '/downloads' to save files to the persistent volume."

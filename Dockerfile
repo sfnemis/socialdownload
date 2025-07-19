@@ -18,7 +18,7 @@ WORKDIR /app
 
 # Install yt-dlp first
 RUN apt-get update && apt-get install -y python3 python3-pip --no-install-recommends && \
-    pip3 install --upgrade yt-dlp && \
+    pip3 install --upgrade yt-dlp --break-system-packages && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 

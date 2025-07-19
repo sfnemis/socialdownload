@@ -1,24 +1,26 @@
 # 1. Stage: Install dependencies
-FROM node:20-alpine AS deps
+FROM node:20-slim AS deps
 WORKDIR /app
 COPY package.json package-lock.json* ./
 COPY prisma ./prisma
 RUN npm install
 
 # 2. Stage: Build the application
-FROM node:20-alpine AS builder
+FROM node:20-slim AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build
 
 # 3. Stage: Production image
-FROM node:20-alpine AS production
+FROM node:20-slim AS production
 WORKDIR /app
 
 # Install yt-dlp first
-RUN apk add --no-cache python3 py3-pip && \
-    pip3 install --upgrade yt-dlp --break-system-packages
+RUN apt-get update && apt-get install -y python3 python3-pip --no-install-recommends && \
+    pip3 install --upgrade yt-dlp && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copy production dependencies
 COPY --from=deps /app/package.json /app/package-lock.json* /app/

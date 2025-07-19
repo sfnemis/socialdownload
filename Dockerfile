@@ -10,9 +10,8 @@ RUN npm install
 # Copy the rest of the application source code
 COPY . .
 
-# Build the Next.js application and the seed script
+# Build the Next.js application
 RUN npm run build
-RUN npm run build:scripts
 
 # Stage 2: Production image
 FROM node:20

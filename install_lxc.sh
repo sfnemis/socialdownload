@@ -42,35 +42,44 @@ echo "./data/downloads for video downloads."
 mkdir -p ./data/db
 mkdir -p ./data/downloads
 
-# 6. Build the Docker image
-echo "🏗️ Building the Docker image 'social-downloader'..."
-docker build -t social-downloader .
+# --- Stop any previous versions --- #
+echo "---> Stopping any previous running versions of the app..."
+# Stop pm2 process if it exists
+pm2 delete socialdownload || true
 
-# 7. Stop and remove any existing container with the same name
-if [ "$(docker ps -a -q -f name=social-downloader)" ]; then
-    echo "🗑️ Stopping and removing existing 'social-downloader' container..."
-    docker stop social-downloader
-    docker rm social-downloader
-fi
+# --- System Setup --- #
+echo "---> Updating system and installing dependencies..."
+apt-get update
+apt-get install -y curl git python3 python3-pip
 
-# 8. Run the Docker container
-echo "▶️ Running the Docker container..."
-docker run -d \
-  -p 3000:3000 \
-  --name social-downloader \
-  --env-file .env \
-  -v "$(pwd)/data/db:/data" \
-  -v "$(pwd)/data/downloads:/downloads" \
-  --restart unless-stopped \
-  social-downloader
+# Install Node.js v20
+curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+apt-get install -y nodejs
 
-# 9. Set up the database
-echo "⚙️ Setting up the database (seeding)..."
-sleep 5 # Give the container a moment to start up
-docker exec social-downloader npm run db:seed
+# Install global packages
+npm install -g pm2
+pip3 install --upgrade yt-dlp --break-system-packages
 
-# --- Done ---
-echo "✅ Deployment complete!"
+# --- Application Deployment --- #
+# This script assumes it's run from within the project directory.
+
+echo "---> Installing application dependencies..."
+npm install
+
+echo "---> Building application..."
+npm run build
+
+echo "---> Starting application with pm2..."
+pm2 start npm --name "socialdownload" -- start
+
+# Save the pm2 process list to restart on server reboot
+pm2 save
+
+echo "---"
+echo "Deployment complete!"
+echo "Application 'socialdownload' is running and managed by pm2."
+echo "To view logs, run: pm2 logs socialdownload"
+echo "To stop the app, run: pm2 stop socialdownload"
 echo "Your Social Downloader is now running on http://<YOUR_LXC_IP>:3000"
 echo "Login with admin@example.com and password 'admin'."
 echo "IMPORTANT: In the application settings, set your download path to '/downloads' to save files to the persistent volume."

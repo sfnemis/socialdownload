@@ -11,10 +11,10 @@
     "db:seed": "node dist/scripts/scripts/seed.js"
   },
   "dependencies": {
-    "@paralleldrive/cuid2": "^2.2.2",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-tabs": "^1.1.0",
     "@types/bcryptjs": "^2.4.6",
+    "@types/uuid": "^10.0.0",
     "bcryptjs": "^2.4.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
@@ -26,6 +26,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "tailwind-merge": "^2.4.0",
+    "uuid": "^10.0.0",
     "yt-dlp-wrap": "^2.3.12"
   },
   "devDependencies": {

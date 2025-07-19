@@ -1,5 +1,5 @@
-import bcrypt from 'bcryptjs';
-import { createId } from '@paralleldrive/cuid2';
+import * as bcrypt from 'bcryptjs';
+import { v4 as uuidv4 } from 'uuid';
 import { getDb } from '../app/lib/db';
 import { User } from '../app/lib/types';
 
@@ -17,7 +17,7 @@ async function main() {
     const now = new Date().toISOString();
 
     const adminUser: User = {
-      id: createId(),
+      id: uuidv4(),
       email: adminEmail,
       password: hashedPassword,
       role: 'ADMIN',

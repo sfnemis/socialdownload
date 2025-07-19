@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';
+import * as bcrypt from 'bcryptjs';
 import { getDb } from '../../lib/db';
 import { User } from '../../lib/types';
-import { createId } from '@paralleldrive/cuid2';
+import { v4 as uuidv4 } from 'uuid';
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     const now = new Date().toISOString();
 
     const newUser: User = {
-      id: createId(),
+      id: uuidv4(),
       email,
       password: hashedPassword,
       role: 'USER', // Default role

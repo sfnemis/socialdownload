@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "outDir": "dist/scripts",
+    "rootDir": ".",
+    "noEmit": false
+  },
+  "include": [
+    "scripts/seed.ts",
+    "app/lib/db.ts",
+    "app/lib/types.ts"
+  ]
+}

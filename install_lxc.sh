@@ -65,10 +65,9 @@ docker run -d \
   social-downloader
 
 # 9. Set up the database
-echo "⚙️ Setting up the database (migrations and seeding)..."
+echo "⚙️ Setting up the database (seeding)..."
 sleep 5 # Give the container a moment to start up
-docker exec social-downloader npm run db:migrate
-docker exec social-downloader npm run seed
+docker exec social-downloader npm run db:seed
 
 # --- Done ---
 echo "✅ Deployment complete!"

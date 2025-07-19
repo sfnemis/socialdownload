@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
 import { cookies } from 'next/headers';
+import { getDb } from '../../lib/db';
+import { User } from '../../lib/types';
 
 interface JwtPayload {
   userId: string;
@@ -21,16 +22,25 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
+  const db = await getDb();
 
-  await prisma.user.update({
-    where: { id: decoded.userId },
-    data: {
-      downloadPath: body.downloadPath,
-      youtubeCookies: body.youtubeCookies,
-      instagramCookies: body.instagramCookies,
-      xCookies: body.xCookies,
-    },
-  });
+  const userIndex = db.data.users.findIndex((u: User) => u.id === decoded.userId);
+
+  if (userIndex === -1) {
+    return NextResponse.json({ message: 'User not found' }, { status: 404 });
+  }
+
+  const updatedUser = {
+    ...db.data.users[userIndex],
+    downloadPath: body.downloadPath,
+    youtubeCookies: body.youtubeCookies,
+    instagramCookies: body.instagramCookies,
+    xCookies: body.xCookies,
+    updatedAt: new Date().toISOString(),
+  };
+
+  db.data.users[userIndex] = updatedUser;
+  await db.write();
 
   return NextResponse.json({ message: 'Settings updated successfully' });
 }

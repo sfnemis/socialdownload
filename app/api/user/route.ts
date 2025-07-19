@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
 import { cookies } from 'next/headers';
+import { getDb } from '../../lib/db';
+import { User } from '../../lib/types';
 
 interface JwtPayload {
   userId: string;
@@ -20,22 +21,15 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ message: 'Invalid token' }, { status: 401 });
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: decoded.userId },
-    select: {
-      id: true,
-      email: true,
-      role: true,
-      downloadPath: true,
-      youtubeCookies: true,
-      instagramCookies: true,
-      xCookies: true,
-    },
-  });
+  const db = await getDb();
+  const user = db.data.users.find((u: User) => u.id === decoded.userId);
 
   if (!user) {
     return NextResponse.json({ message: 'User not found' }, { status: 404 });
   }
 
-  return NextResponse.json(user);
+  // Omit password before sending response
+  const { password, ...userWithoutPassword } = user;
+
+  return NextResponse.json(userWithoutPassword);
 }

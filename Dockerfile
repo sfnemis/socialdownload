@@ -1,5 +1,5 @@
 # Stage 1: Build the application
-FROM node:20-slim AS builder
+FROM node:20 AS builder
 
 WORKDIR /app
 
@@ -15,7 +15,7 @@ RUN npm run build
 RUN npm run build:scripts
 
 # Stage 2: Production image
-FROM node:20-slim
+FROM node:20
 
 WORKDIR /app
 

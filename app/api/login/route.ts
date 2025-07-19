@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';
+import * as bcrypt from 'bcryptjs';
 import { generateToken } from '@/lib/auth';
 import { getDb } from '../../lib/db';
 import { User } from '../../lib/types';
@@ -18,7 +18,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
   }
 
-  const isPasswordValid = await bcrypt.compare(password, user.password);
+  // Ensure we are working with a plain object, not a proxy from the DB
+  const plainUser = { ...user };
+
+  const isPasswordValid = await bcrypt.compare(password, plainUser.password);
 
   if (!isPasswordValid) {
     return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });

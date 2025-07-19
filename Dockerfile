@@ -18,7 +18,7 @@ WORKDIR /app
 
 # Install yt-dlp first
 RUN apk add --no-cache python3 py3-pip && \
-    pip3 install --upgrade yt-dlp
+    pip3 install --upgrade yt-dlp --break-system-packages
 
 # Copy production dependencies
 COPY --from=deps /app/package.json /app/package-lock.json* /app/

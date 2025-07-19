@@ -31,6 +31,8 @@ RUN npm install --production
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/scripts ./scripts
+COPY --from=builder /app/app ./app
+COPY --from=builder /app/tsconfig.json ./
 
 EXPOSE 3000
 
